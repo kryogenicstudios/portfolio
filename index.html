@@ -25,7 +25,6 @@
         <a href="#about">About</a>
         <a href="#works">Projects</a>
         <a href="#testimonials">Feedback</a>
-        <a href="#rate-me">Rate Me</a>
         <a href="#contact">Contact</a>
       </nav>
     </header>
@@ -56,10 +55,6 @@
             <div class="hero-stat">
               <strong>Luau</strong>
               <span>Main Language</span>
-            </div>
-            <div class="hero-stat">
-              <strong data-rating-average>5.0</strong>
-              <span data-rating-count-label>Ratings</span>
             </div>
           </div>
           <div class="hero-links">
@@ -308,7 +303,7 @@
                 playsinline
                 preload="metadata"
               >
-                <source src="media/Ability System.mp4" type="video/mp4">
+                <source src="media/AbilitySystem.mp4" type="video/mp4">
               </video>
               <button
                 class="project-play-toggle"
@@ -482,102 +477,6 @@
             </p>
             <p class="feedback-name">Scuff</p>
             <p class="feedback-role">Commission Client</p>
-          </article>
-        </div>
-      </section>
-
-      <section class="section reveal" id="rate-me">
-        <div class="section-head">
-          <p class="eyebrow">Rate Me</p>
-          <h2>Leave a Roblox-backed rating.</h2>
-          <p class="section-note">
-            Enter your Roblox username, leave a score and short note, and save it directly in the browser.
-            Ratings are saved in this browser each time you submit.
-          </p>
-        </div>
-
-        <div class="rating-layout">
-          <article class="rating-card rating-card-form">
-            <div class="rating-summary">
-              <div class="rating-summary-value" data-rating-average-large>5.0</div>
-              <div>
-                <p class="small-label">Current Rating</p>
-                <p class="rating-summary-copy">
-                  No ratings yet.
-                </p>
-              </div>
-            </div>
-
-            <form class="rating-form" data-rating-form>
-              <label class="rating-field">
-                <span>Roblox Username</span>
-                <input
-                  class="rating-input"
-                  type="text"
-                  name="username"
-                  maxlength="20"
-                  placeholder="Builderman"
-                  required
-                >
-                <small class="rating-help">Saved by the username entered here.</small>
-              </label>
-
-              <label class="rating-field">
-                <span>Rating</span>
-                <div class="rating-stars" role="radiogroup" aria-label="Choose a rating">
-                  <label class="rating-star-option">
-                    <input type="radio" name="score" value="5" checked required>
-                    <span>5</span>
-                  </label>
-                  <label class="rating-star-option">
-                    <input type="radio" name="score" value="4" required>
-                    <span>4</span>
-                  </label>
-                  <label class="rating-star-option">
-                    <input type="radio" name="score" value="3" required>
-                    <span>3</span>
-                  </label>
-                  <label class="rating-star-option">
-                    <input type="radio" name="score" value="2" required>
-                    <span>2</span>
-                  </label>
-                  <label class="rating-star-option">
-                    <input type="radio" name="score" value="1" required>
-                    <span>1</span>
-                  </label>
-                </div>
-              </label>
-
-              <label class="rating-field">
-                <span>Short Message</span>
-                <textarea
-                  class="rating-input rating-textarea"
-                  name="message"
-                  rows="4"
-                  maxlength="180"
-                  placeholder="Fast communication, clean code, solid delivery."
-                  required
-                ></textarea>
-              </label>
-
-              <p class="rating-status" data-rating-status aria-live="polite"></p>
-
-              <div class="rating-actions">
-                <button class="hero-link hero-link-primary" type="submit">
-                  Save Rating
-                </button>
-              </div>
-            </form>
-          </article>
-
-          <article class="rating-card rating-card-list">
-            <div class="rating-list-head">
-              <div>
-                <p class="small-label">Saved Ratings</p>
-                <p class="rating-summary-copy">Newest verified ratings appear first.</p>
-              </div>
-            </div>
-            <div class="rating-list" data-rating-list></div>
           </article>
         </div>
       </section>
