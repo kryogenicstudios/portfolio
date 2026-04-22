@@ -112,7 +112,7 @@ if (serverName && serverOnline && serverLink) {
       const data = await response.json();
       const inviteUrl = data.instant_invite || fallbackInvite;
 
-      serverName.textContent = data.name || "kryosphere server";
+      serverName.textContent = data.name || "skyrosphere server";
       serverInviteText.textContent = inviteUrl.replace("https://", "");
       serverOnline.textContent = `${data.presence_count ?? 0} Online`;
       serverLink.href = inviteUrl;
@@ -128,7 +128,7 @@ if (serverName && serverOnline && serverLink) {
         serverAvatar.textContent = initials;
       }
     } catch (error) {
-      serverName.textContent = "kryosphere server";
+      serverName.textContent = "skyrosphere server";
       serverInviteText.textContent = "discord.gg/5PDBqm4CBX";
       serverOnline.textContent = "Enable Discord widget for live online count";
       serverLink.href = fallbackInvite;
