@@ -9,9 +9,7 @@ const serverLink = document.querySelector("[data-server-link]");
 const serverAvatar = document.querySelector("[data-server-avatar]");
 const sharedStatusText = document.querySelector("[data-shared-status-text]");
 const sharedDiscordStatus = document.querySelector("[data-shared-discord-status]");
-const randomFrameVideos = document.querySelectorAll("[data-random-frame-video]");
-const videoToggleButtons = document.querySelectorAll("[data-video-toggle]");
-const videoFullscreenButtons = document.querySelectorAll("[data-video-fullscreen]");
+const youtubeEmbeds = document.querySelectorAll("[data-youtube-embed]");
 
 if (!("IntersectionObserver" in window)) {
   revealItems.forEach((item) => item.classList.add("is-visible"));
@@ -140,113 +138,80 @@ if (serverName && serverOnline && serverLink) {
   updateServerCard();
 }
 
-if (randomFrameVideos.length > 0) {
-  randomFrameVideos.forEach((video) => {
-    video.dataset.previewReady = "false";
-    video.dataset.hasStarted = "false";
+const getYouTubeVideoId = (url) => {
+  const normalizeVideoId = (value) => {
+    const trimmedValue = value?.trim() || "";
+    return /^[\w-]{11}$/.test(trimmedValue) ? trimmedValue : null;
+  };
 
-    const setRandomFrame = () => {
-      if (!Number.isFinite(video.duration) || video.duration <= 0) {
-        return;
+  if (!url) {
+    return null;
+  }
+
+  try {
+    const parsedUrl = new URL(url, window.location.href);
+    const hostname = parsedUrl.hostname.replace(/^www\./, "").toLowerCase();
+
+    if (hostname === "youtu.be") {
+      return normalizeVideoId(parsedUrl.pathname.split("/").filter(Boolean)[0]);
+    }
+
+    if (
+      hostname === "youtube.com" ||
+      hostname === "m.youtube.com" ||
+      hostname === "youtube-nocookie.com"
+    ) {
+      if (parsedUrl.pathname === "/watch") {
+        return normalizeVideoId(parsedUrl.searchParams.get("v"));
       }
 
-      const minTime = Math.max(0, video.duration * 0.15);
-      const maxTime = Math.max(minTime, video.duration * 0.85);
-      const targetTime = minTime + Math.random() * (maxTime - minTime);
+      const pathParts = parsedUrl.pathname.split("/").filter(Boolean);
+      if (pathParts[0] === "embed" || pathParts[0] === "shorts") {
+        return normalizeVideoId(pathParts[1]);
+      }
+    }
+  } catch (error) {
+    return null;
+  }
 
-      video.currentTime = targetTime;
-    };
+  return null;
+};
 
-    video.addEventListener("loadedmetadata", setRandomFrame, { once: true });
-    video.addEventListener(
-      "seeked",
-      () => {
-        video.pause();
-        video.dataset.previewReady = "true";
-      },
-      { once: true }
-    );
-  });
-}
+if (youtubeEmbeds.length > 0) {
+  youtubeEmbeds.forEach((embedRoot) => {
+    const preview = embedRoot.closest(".project-preview");
+    const title = preview?.dataset.youtubeTitle || "Project Video";
+    const rawUrl = preview?.dataset.youtubeUrl?.trim() || "";
+    const videoId = getYouTubeVideoId(rawUrl);
 
-if (videoToggleButtons.length > 0) {
-  videoToggleButtons.forEach((button) => {
-    const preview = button.closest(".project-preview");
-    const video = preview?.querySelector("video");
-    const icon = button.querySelector("[data-video-toggle-icon]");
-
-    if (!preview || !video || !icon) {
+    if (!videoId) {
+      embedRoot.innerHTML = `
+        <div class="project-video-placeholder">
+          <p class="project-video-placeholder-label">YouTube video pending</p>
+          <p class="project-video-placeholder-title">${title}</p>
+          <p class="project-video-placeholder-note">Paste the video URL into the card's <code>data-youtube-url</code> attribute.</p>
+        </div>
+      `;
       return;
     }
 
-    const setButtonState = (isPlaying) => {
-      icon.innerHTML = isPlaying ? "&#10074;&#10074;" : "&#9654;";
-      button.setAttribute("aria-label", isPlaying ? "Pause project preview" : "Play project preview");
-      preview.classList.toggle("is-playing", isPlaying);
-    };
+    const iframe = document.createElement("iframe");
+    iframe.className = "project-video-embed";
+    iframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?rel=0&modestbranding=1`;
+    iframe.title = `${title} YouTube video`;
+    iframe.loading = "lazy";
+    iframe.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+    iframe.referrerPolicy = "strict-origin-when-cross-origin";
+    iframe.allowFullscreen = true;
 
-    button.addEventListener("click", async () => {
-      if (video.paused) {
-        if (video.dataset.previewReady === "true" && video.dataset.hasStarted !== "true") {
-          video.currentTime = 0;
-        }
+    const link = document.createElement("a");
+    link.className = "project-video-link";
+    link.href = `https://www.youtube.com/watch?v=${videoId}`;
+    link.target = "_blank";
+    link.rel = "noreferrer";
+    link.textContent = "Watch on YouTube";
 
-        try {
-          await video.play();
-          video.dataset.hasStarted = "true";
-          setButtonState(true);
-        } catch (error) {
-          setButtonState(false);
-        }
-      } else {
-        video.pause();
-        setButtonState(false);
-      }
-    });
-
-    video.addEventListener("ended", () => {
-      video.pause();
-      video.dataset.hasStarted = "false";
-      setButtonState(false);
-    });
-
-    video.addEventListener("play", () => {
-      setButtonState(true);
-    });
-
-    video.addEventListener("pause", () => {
-      setButtonState(false);
-    });
-  });
-}
-
-if (videoFullscreenButtons.length > 0) {
-  videoFullscreenButtons.forEach((button) => {
-    const preview = button.closest(".project-preview");
-    const video = preview?.querySelector("video");
-
-    if (!video) {
-      return;
-    }
-
-    button.addEventListener("click", async () => {
-      try {
-        if (document.fullscreenElement) {
-          await document.exitFullscreen();
-          return;
-        }
-
-        if (video.requestFullscreen) {
-          await video.requestFullscreen();
-          return;
-        }
-
-        if (video.webkitEnterFullscreen) {
-          video.webkitEnterFullscreen();
-        }
-      } catch (error) {
-        // Ignore fullscreen errors and leave the preview unchanged.
-      }
-    });
+    embedRoot.replaceChildren(iframe, link);
   });
 }
